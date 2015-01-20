@@ -21,9 +21,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(TEENSY_USB_MODE HID)
+# XXX Make this work. Function declarations are missing from the .pde file.
 
-import_arduino_library(Bounce)
-
-# Create a target for every Arduino sketch file in sub-directories.
-add_sketches()
+#set(TEENSY_USB_MODE FLIGHTSIM)
+#
+#import_arduino_library(Bounce)
+#import_arduino_library(Encoder)
+#import_arduino_library(DogLcd)
+#
+## Create a target for the sketch in this directory.
+#add_sketch()

@@ -23,5 +23,7 @@
 
 set(TEENSY_USB_MODE HID)
 
+import_arduino_library(Bounce)
+
 # Create a target for every Arduino sketch file in sub-directories.
 add_sketches()
