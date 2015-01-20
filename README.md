@@ -2,7 +2,7 @@
 
 teensy-cmake is a template for Teensy projects that uses CMake to build your sketches.
 This lets you develop for Teensy using your favorite text editor and terminal.
-It can easily accomodate executables built from several source and header files.
+It can easily accommodate executables built from several source and header files.
 
 Teensy sketches from Teensyduino have been included to get started quickly.
 
@@ -17,7 +17,7 @@ It has currently only been tested on Linux with a Teensy 3.1.
 
 # Setup
 
-Clone this repository from GitHub.
+Clone this repository from GitHub:
 
 ```bash
 git clone https://github.com/xya/teensy-cmake.git
@@ -28,7 +28,6 @@ If you don't have Teensystudio installed, clone the Teensy 'cores' repository fr
 
 ```bash
 git clone https://github.com/PaulStoffregen/cores.git
-cd teensy-cmake
 ```
 
 Create a build directory:
