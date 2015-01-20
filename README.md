@@ -33,19 +33,19 @@ git clone https://github.com/PaulStoffregen/cores.git
 Create a build directory:
 
 ```bash
-mkdir -p build/debug
-cd build/debug
+mkdir build
+cd build
 ```
 
-Run CMake (with the toolchain file):
+Run CMake:
 ```bash
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../teensy-arm.toolchain.cmake -DCMAKE_BUILD_TYPE:STRING=Debug 
+cmake ..
 ```
 
 This last step might fail with errors such as 'compiler not found'. In this case, run the CMake GUI:
 
 ```bash
-cmake-gui ../..
+cmake-gui ..
 ```
 
 Make sure that 'TEENSY_CORES_ROOT' points to the 'cores' directory from Arduino (e.g. /usr/share/arduino/hardware/teensy/cores), or to the directory where you cloned the 'cores' directory.
