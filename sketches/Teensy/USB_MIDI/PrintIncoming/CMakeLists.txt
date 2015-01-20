@@ -21,11 +21,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# XXX Make this work. Function declarations are missing from the .pde file.
+set(TEENSY_USB_MODE MIDI)
 
-#set(TEENSY_USB_MODE MIDI)
-#
-#import_arduino_library(Bounce)
-#
-## Create a target for the sketch in this directory.
-#add_sketch()
+import_arduino_library(Bounce)
+
+# Create a target for the sketch in this directory.
+add_sketch()

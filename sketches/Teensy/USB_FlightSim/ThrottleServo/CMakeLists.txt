@@ -21,12 +21,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+set(TEENSY_USB_MODE FLIGHTSIM)
+set(TEENSY_CXX_FLAGS -fpermissive)
 
-# XXX Make this work. Function declarations are missing from the .pde file.
+import_arduino_library(Servo)
 
-#set(TEENSY_USB_MODE FLIGHTSIM)
-#
-#import_arduino_library(Servo)
-#
-## Create a target for the sketch in this directory.
-#add_sketch()
+# Create a target for the sketch in this directory.
+add_sketch()

@@ -85,7 +85,9 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
     else()
         message(FATAL_ERROR "Invalid USB mode: ${TEENSY_USB_MODE}")
     endif()
-    set(TARGET_FLAGS "-D${USB_MODE_DEF} -DF_CPU=${TEENSY_FREQUENCY}000000")
+    set(TARGET_FLAGS "-D${USB_MODE_DEF} -DF_CPU=${TEENSY_FREQUENCY}000000 ${TEENSY_FLAGS}")
+    set(TARGET_C_FLAGS "${TARGET_FLAGS} ${TEENSY_C_FLAGS}")
+    set(TARGET_CXX_FLAGS "${TARGET_FLAGS} ${TEENSY_CXX_FLAGS}")
 
     # Build the Teensy 'core' library.
     # Per-target because of preprocessor definitions.
@@ -94,8 +96,9 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
         ${TEENSY_CXX_CORE_FILES}
     )
     set_source_files_properties(${TEENSY_C_CORE_FILES}
-                                ${TEENSY_CXX_CORE_FILES}
-                                PROPERTIES GENERATED TRUE COMPILE_FLAGS ${TARGET_FLAGS})
+        PROPERTIES COMPILE_FLAGS ${TARGET_C_FLAGS})
+    set_source_files_properties(${TEENSY_CXX_CORE_FILES}
+        PROPERTIES COMPILE_FLAGS ${TARGET_CXX_FLAGS})
 
     set(FINAL_SOURCES ${TEENSY_LIB_SOURCES})
     foreach(SOURCE ${SOURCES})
@@ -105,10 +108,15 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
         if((${SOURCE_EXT} STREQUAL .ino) OR (${SOURCE_EXT} STREQUAL .pde))
             # Generate a stub C++ file from the Arduino sketch file.
             set(GEN_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE_NAME}.cpp")
-            file(WRITE ${GEN_SOURCE} "\#include \"Arduino.h\"\n")
-            file(APPEND ${GEN_SOURCE} "void setup();\n")
-            file(APPEND ${GEN_SOURCE} "void loop();\n\n")
-            file(APPEND ${GEN_SOURCE} "\#include \"${SOURCE_PATH}\"\n")
+            set(CUSTOM_TEMPLATE "${SOURCE}.in")
+            if(EXISTS "${CUSTOM_TEMPLATE}")
+                configure_file("${CUSTOM_TEMPLATE}" "${GEN_SOURCE}")
+            else()
+                file(WRITE ${GEN_SOURCE} "\#include \"Arduino.h\"\n")
+                file(APPEND ${GEN_SOURCE} "void setup();\n")
+                file(APPEND ${GEN_SOURCE} "void loop();\n\n")
+                file(APPEND ${GEN_SOURCE} "\#include \"${SOURCE_PATH}\"\n")
+            endif()
             set(FINAL_SOURCES ${FINAL_SOURCES} ${GEN_SOURCE})
         else()
             set(FINAL_SOURCES ${FINAL_SOURCES} ${SOURCE})
@@ -122,8 +130,8 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
     
     # Build the ELF executable.
     add_executable(${TARGET_NAME} ${FINAL_SOURCES})
-    set_source_files_properties(${FINAL_SOURCES} ${TEENSY_CXX_CORE_FILES}
-                                PROPERTIES GENERATED TRUE COMPILE_FLAGS ${TARGET_FLAGS})
+    set_source_files_properties(${FINAL_SOURCES}
+        PROPERTIES COMPILE_FLAGS ${TARGET_CXX_FLAGS})
     target_link_libraries(${TARGET_NAME} ${TARGET_NAME}_TeensyCore)
     set_target_properties(${TARGET_NAME} PROPERTIES
         OUTPUT_NAME ${TARGET_NAME}
@@ -186,6 +194,7 @@ macro(_add_sketch_internal SKETCH_DIR SKETCH)
     endif()
 endmacro(_add_sketch_internal)
 
+# Create a target for every Arduino sketch file in sub-directories.
 macro(add_sketches)
     set(SKETCH_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
     file(GLOB SKETCHES RELATIVE ${SKETCH_DIR} ${SKETCH_DIR}/*)
