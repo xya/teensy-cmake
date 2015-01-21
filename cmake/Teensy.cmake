@@ -21,6 +21,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+set(TY_EXECUTABLE "/usr/bin/tyc" CACHE FILEPATH "Path to the 'ty' executable that can upload programs to the Teensy")
+
 set(TEENSY_C_CORE_FILES
     ${TEENSY_ROOT}/math_helper.c
     ${TEENSY_ROOT}/analog.c
@@ -148,7 +150,12 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
                       DEPENDS ${TARGET_ELF}.eep ${TARGET_ELF}.hex)
     add_dependencies(${TARGET_NAME}_Firmware ${TARGET_NAME})
     
-    # XXX ${TARGET_NAME}_Flash (not run for 'all')
+    if(EXISTS "${TY_EXECUTABLE}")
+        add_custom_target(${TARGET_NAME}_Upload
+                          DEPENDS ${TY_EXECUTABLE} ${TARGET_ELF}.hex
+                          COMMAND "${TY_EXECUTABLE}" upload ${TARGET_ELF}.hex)
+        add_dependencies(${TARGET_NAME}_Upload ${TARGET_NAME}_Firmware)
+    endif(EXISTS "${TY_EXECUTABLE}")
 endmacro(add_teensy_executable) 
 
 macro(import_arduino_library LIB_NAME)
