@@ -108,9 +108,11 @@ set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <CMAKE_CXX_LINK_FLAGS> <LINK
 
 #if using a windows compiler under a unix shell, paths written in template files must be converted to native windows paths
 set(CONVERT_PATHS_TO_WIN FALSE)
-if(${UNIX} AND (NOT DEFINED ${CYGWIN}) AND (NOT DEFINED ${MINGW}))
-  #note: CYGWIN and MINGW are variables, but UNIX seems to be a macro
-  set(CONVERT_PATHS_TO_WIN TRUE)
+if(UNIX)
+  if(NOT DEFINED ${CYGWIN}) AND (NOT DEFINED ${MINGW}))
+    #note: CYGWIN and MINGW are variables, but UNIX seems to be a macro
+    set(CONVERT_PATHS_TO_WIN TRUE)
+  endif()
 endif()
 
 add_definitions("-DARDUINO=${ARDUINO_VERSION}")
