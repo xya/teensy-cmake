@@ -23,51 +23,12 @@
 
 set(TY_EXECUTABLE "/usr/bin/tyc" CACHE FILEPATH "Path to the 'ty' executable that can upload programs to the Teensy")
 
-set(TEENSY_C_CORE_FILES
-    ${TEENSY_ROOT}/math_helper.c
-    ${TEENSY_ROOT}/analog.c
-    ${TEENSY_ROOT}/serial1.c
-    ${TEENSY_ROOT}/serial2.c
-    ${TEENSY_ROOT}/serial3.c
-    ${TEENSY_ROOT}/usb_mem.c
-    ${TEENSY_ROOT}/usb_dev.c
-    ${TEENSY_ROOT}/usb_midi.c
-    ${TEENSY_ROOT}/usb_mouse.c 
-    ${TEENSY_ROOT}/usb_desc.c
-    ${TEENSY_ROOT}/usb_keyboard.c
-    ${TEENSY_ROOT}/usb_joystick.c
-    ${TEENSY_ROOT}/usb_rawhid.c
-    ${TEENSY_ROOT}/usb_seremu.c
-    ${TEENSY_ROOT}/usb_serial.c
-    ${TEENSY_ROOT}/mk20dx128.c
-    ${TEENSY_ROOT}/touch.c
-    ${TEENSY_ROOT}/pins_teensy.c
-    ${TEENSY_ROOT}/keylayouts.c
-    ${TEENSY_ROOT}/nonstd.c
-    ${TEENSY_ROOT}/eeprom.c
-)
+macro(unix_to_windows_path UnixPath ResultingPath)
+  string(REGEX REPLACE "^(/|/cygdrive/)([a-zA-Z])/" "\\2:/" ${ResultingPath} "${UnixPath}")
+endmacro()
 
-set(TEENSY_CXX_CORE_FILES
-    ${TEENSY_ROOT}/main.cpp
-    ${TEENSY_ROOT}/usb_inst.cpp
-    ${TEENSY_ROOT}/yield.cpp
-    ${TEENSY_ROOT}/HardwareSerial1.cpp 
-    ${TEENSY_ROOT}/HardwareSerial2.cpp
-    ${TEENSY_ROOT}/HardwareSerial3.cpp
-    ${TEENSY_ROOT}/WMath.cpp
-    ${TEENSY_ROOT}/Print.cpp
-    
-    ${TEENSY_ROOT}/new.cpp
-    ${TEENSY_ROOT}/usb_flightsim.cpp
-    ${TEENSY_ROOT}/avr_emulation.cpp
-    ${TEENSY_ROOT}/IPAddress.cpp
-    ${TEENSY_ROOT}/Stream.cpp
-    ${TEENSY_ROOT}/Tone.cpp
-    ${TEENSY_ROOT}/IntervalTimer.cpp
-    ${TEENSY_ROOT}/DMAChannel.cpp
-    ${TEENSY_ROOT}/AudioStream.cpp
-    ${TEENSY_ROOT}/WString.cpp
-)
+file(GLOB TEENSY_C_CORE_FILES  "${TEENSY_ROOT}/*.c")
+file(GLOB TEENSY_CXX_CORE_FILES  "${TEENSY_ROOT}/*.cpp")
 
 macro(add_teensy_executable TARGET_NAME SOURCES)
     # Determine the target flags for this executable.
@@ -106,7 +67,13 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
     foreach(SOURCE ${SOURCES})
         get_filename_component(SOURCE_EXT ${SOURCE} EXT)
         get_filename_component(SOURCE_NAME ${SOURCE} NAME_WE)
-        get_filename_component(SOURCE_PATH ${SOURCE} REALPATH)
+        if(CONVERT_PATHS_TO_WIN)
+          get_filename_component(SOURCE_PATH_PRE ${SOURCE} REALPATH)
+          unix_to_windows_path(${SOURCE_PATH_PRE} SOURCE_PATH)
+        else()
+          get_filename_component(SOURCE_PATH ${SOURCE} REALPATH)
+        endif()
+
         if((${SOURCE_EXT} STREQUAL .ino) OR (${SOURCE_EXT} STREQUAL .pde))
             # Generate a stub C++ file from the Arduino sketch file.
             set(GEN_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE_NAME}.cpp")
