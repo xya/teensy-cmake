@@ -58,7 +58,7 @@ else()
   message(FATAL_ERROR "Unknown board model: ${TEENSY_BOARD}")
 endif()
 
-set(TEENSY_USB_MODE "SERIAL_HID" CACHE STRING "What kind of USB device the Teensy should emulate")
+set(TEENSY_USB_MODE "SERIAL" CACHE STRING "What kind of USB device the Teensy should emulate")
 set_property(CACHE TEENSY_USB_MODE PROPERTY STRINGS SERIAL HID SERIAL_HID MIDI RAWHID FLIGHTSIM)
 
 if(WIN32)
@@ -109,7 +109,7 @@ set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <CMAKE_CXX_LINK_FLAGS> <LINK
 #if using a windows compiler under a unix shell, paths written in template files must be converted to native windows paths
 set(CONVERT_PATHS_TO_WIN FALSE)
 if(UNIX)
-  if(NOT DEFINED ${CYGWIN}) AND (NOT DEFINED ${MINGW}))
+  if((NOT DEFINED ${CYGWIN}) AND (NOT DEFINED ${MINGW}))
     #note: CYGWIN and MINGW are variables, but UNIX seems to be a macro
     set(CONVERT_PATHS_TO_WIN TRUE)
   endif()
